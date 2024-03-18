@@ -1,9 +1,7 @@
 import cv2
 from cvzone.HandTrackingModule import HandDetector
-import random
-import math
-import numpy as np
 import copy
+from imgSplit import main as startGame
 
 class ButtonManager:
     def __init__(self):
@@ -87,7 +85,8 @@ class PlayButton(Button):
         super().__init__(title,posOrigin,manager)
         
     def action(self):
-        pass
+        global difficulty
+        startGame(difficulty)
 
 class DifficultyButton(Button):
     def __init__(self,title,posOrigin,manager):
@@ -163,7 +162,7 @@ while True:
         # Get the distance between the index and middle fingers
         length, info, img = detector.findDistance(lmList[8][:2], lmList[12][:2], img)
         # Check if the distance between the index and middle fingers is less than 50
-        if length < 50:
+        if length < 30:
             #se nella precedente iterazione non è stato cliccato
             if not clicked:
                 clicked = True

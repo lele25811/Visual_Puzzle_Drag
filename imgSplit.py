@@ -41,6 +41,7 @@ class DragImg():
     
     # Function to update the position of the image
     def update(self, cursor):
+        h, w = self.size
         # Check if in the region of the image
         if self.touched(cursor) and not self.fix:
             self.posOrigin = cursor[0] - w//2, cursor[1] - h//2
@@ -78,7 +79,7 @@ def calculate_data(width, height, W_SIZE, H_SIZE):
     return h, w
 
 # Function to check if each image from imgSplit is positioned correctly on recSplit
-def check_position(imgSplit, recSplit, counter=0):
+def check_position(imgSplit, recSplit,img,counter=0):
     for imgObject, recObject in zip(imgSplit, recSplit):
         x_img, y_img = imgObject.posOrigin
         x_rec, y_rec = recObject.posOrigin
@@ -91,88 +92,89 @@ def check_position(imgSplit, recSplit, counter=0):
         else:
             cv2.rectangle(img, (x_rec, y_rec), (x_rec + w, y_rec + h), (0, 0, 255), 2)  # Red rectangle for incorrect position
     return counter
-# Load an image and create a draggable object for it
-imgS = cv2.imread('img/lenna.png')
-# Get the height, width, and number of channels of the image
-height, width, channels = imgS.shape
-# Specify the number of vertical and horizontal splits for the image
-W_SIZE = 2
-H_SIZE = 2
-# List to store the images
-imgSplit = []
-# List to store the rectangles
-recSplit = []
-# List to store used coordinates
-used_positions = []  
-# Create a black rectangle
-rectangle = np.zeros((height, width, 3), dtype=np.uint8)
-cv2.imwrite("img/rectangle_image.png", rectangle)
-img_rec = cv2.imread('img/rectangle_image.png')
-# Split the rectangle into smaller parts, create draggable objects for each part, and store them in recSplit
-for ih in range(H_SIZE): 
-    for iw in range(W_SIZE):
-        # Calculate the x-coordinate of the top-left corner of the image block
-        x = width / W_SIZE * iw 
-        # Calculate the y-coordinate of the top-left corner of the image block
-        y = height / H_SIZE * ih
-        # Calculate the height and width of each image block based on the grid
-        h, w = calculate_data(width, height, W_SIZE, H_SIZE)
-        # Calculate the position of the image block
-        pos_x = int(widthCAP//2 - width//2 + (w * iw))
-        pos_y = int(heightCAP//2 - height//2 + (h * ih) )
-        # Add the image to the list of images
-        addImage(img_rec, recSplit, x, y, w, h, pos_x, pos_y, ih, iw+3)
-        # Ensure unique and unused position
-        rand_w, rand_h = random.randint(0, widthCAP - (int(w)+1)), random.randint(0, heightCAP - (int(h)+1))
-        # when the position is not good, keep generating new positions
-        while not good_pos(used_positions, rand_w, rand_h):
+
+def main(difficulty):
+    # Load an image and create a draggable object for it
+    imgS = cv2.imread('img/lenna.png')
+    # Get the height, width, and number of channels of the image
+    height, width, channels = imgS.shape
+    # Specify the number of vertical and horizontal splits for the image
+    W_SIZE, H_SIZE = difficulty+1,difficulty+1
+    # List to store the images
+    imgSplit = []
+    # List to store the rectangles
+    recSplit = []
+    # List to store used coordinates
+    used_positions = []  
+    # Create a black rectangle
+    rectangle = np.zeros((height, width, 3), dtype=np.uint8)
+    cv2.imwrite("img/rectangle_image.png", rectangle)
+    img_rec = cv2.imread('img/rectangle_image.png')
+    # Split the rectangle into smaller parts, create draggable objects for each part, and store them in recSplit
+    for ih in range(H_SIZE): 
+        for iw in range(W_SIZE):
+            # Calculate the x-coordinate of the top-left corner of the image block
+            x = width / W_SIZE * iw 
+            # Calculate the y-coordinate of the top-left corner of the image block
+            y = height / H_SIZE * ih
+            # Calculate the height and width of each image block based on the grid
+            h, w = calculate_data(width, height, W_SIZE, H_SIZE)
+            # Calculate the position of the image block
+            pos_x = int(widthCAP//2 - width//2 + (w * iw))
+            pos_y = int(heightCAP//2 - height//2 + (h * ih) )
+            # Add the image to the list of images
+            addImage(img_rec, recSplit, x, y, w, h, pos_x, pos_y, ih, iw+3)
+            # Ensure unique and unused position
             rand_w, rand_h = random.randint(0, widthCAP - (int(w)+1)), random.randint(0, heightCAP - (int(h)+1))
-        # Add the position to the list of used positions
-        used_positions.append((rand_w, rand_h))
-        # Add the image to the list of images
-        addImage(imgS, imgSplit, x, y, w, h, rand_w, rand_h, ih, iw)
-# Main loop for video processing
-while True:
-    # Read the frame
-    success, img = cap.read()
-    # Flip the frame
-    img = cv2.flip(img, 1)
-    # Find the hands in the frame
-    hands, img = detector.findHands(img, flipType=False)
-    # Check if hands are detected
-    if hands:
-        # The list of landmarks for the first hand
-        lmList = hands[0]['lmList']
-        # Get the distance between the index and middle fingers
-        length, info, img = detector.findDistance(lmList[8][:2], lmList[12][:2], img)
-        # Check if the distance between the index and middle fingers is less than 50
-        if length < 50:
-            # The cursor is the tip of the index finger
-            cursor = lmList[8]
-            # Update the position of the images
+            # when the position is not good, keep generating new positions
+            while not good_pos(used_positions, rand_w, rand_h):
+                rand_w, rand_h = random.randint(0, widthCAP - (int(w)+1)), random.randint(0, heightCAP - (int(h)+1))
+            # Add the position to the list of used positions
+            used_positions.append((rand_w, rand_h))
+            # Add the image to the list of images
+            addImage(imgS, imgSplit, x, y, w, h, rand_w, rand_h, ih, iw)
+    # Main loop for video processing
+    while True:
+        # Read the frame
+        success, img = cap.read()
+        # Flip the frame
+        img = cv2.flip(img, 1)
+        # Find the hands in the frame
+        hands, img = detector.findHands(img, flipType=False)
+        # Check if hands are detected
+        if hands:
+            # The list of landmarks for the first hand
+            lmList = hands[0]['lmList']
+            # Get the distance between the index and middle fingers
+            length, info, img = detector.findDistance(lmList[8][:2], lmList[12][:2], img)
+            # Check if the distance between the index and middle fingers is less than 50
+            if length < 50:
+                # The cursor is the tip of the index finger
+                cursor = lmList[8]
+                # Update the position of the images
+                for imgObject in imgSplit:
+                    DragImg.untoggle(imgObject)
+                    if imgObject.update(cursor):
+                        break
+        try:
+            # Draw randomly positioned images on the screen
             for imgObject in imgSplit:
-                DragImg.untoggle(imgObject)
-                if imgObject.update(cursor):
-                    break
-    try:
-        # Draw randomly positioned images on the screen
-        for imgObject in imgSplit:
-            h, w = map(int, imgObject.size)
-            ox2, oy2 = imgObject.posOrigin
-            img[oy2:oy2+h, ox2:ox2+w] = imgObject.img
-    except:
-        pass
-    
-    # Check if the images are positioned correctly on the rectangles, based on the number of images
-    if check_position(imgSplit, recSplit) == H_SIZE * W_SIZE:
-        # show the original image of the puzzle
-        cv2.imshow("Original Image", imgS)
+                h, w = map(int, imgObject.size)
+                ox2, oy2 = imgObject.posOrigin
+                img[oy2:oy2+h, ox2:ox2+w] = imgObject.img
+        except:
+            pass
         
-    # Display the game window
-    cv2.imshow("Image", img)
-    # Break the loop if 'q' key is pressed
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
-# Release the video capture and close all windows
-cap.release()
-cv2.destroyAllWindows()
+        # Check if the images are positioned correctly on the rectangles, based on the number of images
+        if check_position(imgSplit, recSplit,img) == H_SIZE * W_SIZE:
+            # show the original image of the puzzle
+            cv2.imshow("Original Image", imgS)
+            
+        # Display the game window
+        cv2.imshow("Image", img)
+        # Break the loop if 'q' key is pressed
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+    # Release the video capture and close all windows
+    cap.release()
+    cv2.destroyAllWindows()
