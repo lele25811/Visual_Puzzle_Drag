@@ -39,24 +39,24 @@ cx, cy, w, h = 100, 100, 200, 200
 while True:
     succes, img = cap.read()
     image = cv2.flip(img, 1)
-    hands, image = detector.findHands(image)
+    hands, image = detector.findHands(image,flipType=False)
     if hands:
         hand1 = hands[0]
         lmList1 = hand1["lmList"] # list of landmarks (21) points
-        l, _, _ = detector.findDistance(lmList1[8], lmList1[12], image)
+        l, _, _ = detector.findDistance(lmList1[8][:2], lmList1[12][:2], image)
         if l<30:
             cursur = lmList1[8]
-            if cx-w//2 < cursur[0] < cx+w//2 and cy-h//2 < cursur[1] < cy+h//2:
-                colorR = 0, 255, 0
+            if cx < cursur[0] < cx+w and cy-h < cursur[1] < cy+h:
+                colorR = (0, 255, 0)
                 cx = cursur[0]
                 cy = cursur[1]
             else: 
                 colorR = (255, 0, 255)
 
     cv2.rectangle(image, (cx-w//2, cy-h//2), (cx+w//2, cy+h//2), colorR, cv2.FILLED)
-    #im = cv2.imread('img/Lenna.png')
-    #im = cv2.resize(im, ((w, h)))
-    #image[cy - h//2: cy+h//2, cx - w//2: cx + w//2] = im
+    im = cv2.imread('img/Lenna.png')
+    im = cv2.resize(im, ((w, h)))
+    image[cy - h//2: cy+h//2, cx - w//2: cx + w//2] = im
 
 
 
