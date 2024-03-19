@@ -3,6 +3,7 @@ from cvzone.HandTrackingModule import HandDetector
 import random
 import math
 import numpy as np
+import os
 
 # Set up the video capture
 cap = cv2.VideoCapture(0)
@@ -108,8 +109,7 @@ def main(difficulty):
     used_positions = []  
     # Create a black rectangle
     rectangle = np.zeros((height, width, 3), dtype=np.uint8)
-    cv2.imwrite("img/rectangle_image.png", rectangle)
-    img_rec = cv2.imread('img/rectangle_image.png')
+ 
     # Split the rectangle into smaller parts, create draggable objects for each part, and store them in recSplit
     for ih in range(H_SIZE): 
         for iw in range(W_SIZE):
@@ -123,7 +123,7 @@ def main(difficulty):
             pos_x = int(widthCAP//2 - width//2 + (w * iw))
             pos_y = int(heightCAP//2 - height//2 + (h * ih) )
             # Add the image to the list of images
-            addImage(img_rec, recSplit, x, y, w, h, pos_x, pos_y, ih, iw+3)
+            addImage(rectangle , recSplit, x, y, w, h, pos_x, pos_y, ih, iw+3)
             # Ensure unique and unused position
             rand_w, rand_h = random.randint(0, widthCAP - (int(w)+1)), random.randint(0, heightCAP - (int(h)+1))
             # when the position is not good, keep generating new positions
@@ -133,6 +133,7 @@ def main(difficulty):
             used_positions.append((rand_w, rand_h))
             # Add the image to the list of images
             addImage(imgS, imgSplit, x, y, w, h, rand_w, rand_h, ih, iw)
+            
     # Main loop for video processing
     while True:
         # Read the frame
@@ -169,12 +170,20 @@ def main(difficulty):
         if check_position(imgSplit, recSplit,img) == H_SIZE * W_SIZE:
             # show the original image of the puzzle
             cv2.imshow("Original Image", imgS)
-            
+                    
         # Display the game window
         cv2.imshow("Image", img)
         # Break the loop if 'q' key is pressed
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
+        
+    # Remove the images from the img folder
+    for imgObject in imgSplit:
+        os.remove(imgObject.path)    
+                    
+    for recObject in recSplit:
+        os.remove(recObject.path)
+        
     # Release the video capture and close all windows
     cap.release()
     cv2.destroyAllWindows()

@@ -87,7 +87,7 @@ class PlayButton(Button):
     def action(self):
         global difficulty
         startGame(difficulty)
-
+        
 class DifficultyButton(Button):
     def __init__(self,title,posOrigin,manager):
         super().__init__(title,posOrigin,manager)
@@ -151,6 +151,8 @@ difficulty = 1
 
 while True:
     success, img = cap.read()
+    if not success:
+        break
     #Flip the frame
     img = cv2.flip(img, 1)
     # Find the hands in the frame
@@ -176,7 +178,11 @@ while True:
 
     cv2.imshow("Image", img)
     
-    if cv2.waitKey(1) & 0xFF == ord('q'):
+    if cv2.waitKey(1) & 0xFF == ord('s'):
         break
+    
+# Release the video capture and close all windows
+cap.release()
+cv2.destroyAllWindows() 
 
 
