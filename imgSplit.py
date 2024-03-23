@@ -6,13 +6,11 @@ import numpy as np
 import os
 
 # Set up the video capture
-cap = cv2.VideoCapture(0)
-cap.set(3, 1280)
-cap.set(4, 720)
+#cap = cv2.VideoCapture(0)
+#cap.set(3, 1280)
+#cap.set(4, 720)
 
 # Get the width and height of the video capture
-widthCAP = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-heightCAP = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
 # Initialize the hand detector from the cvzone library
 detector = HandDetector(detectionCon=0.65)
@@ -94,7 +92,9 @@ def check_position(imgSplit, recSplit,img,counter=0):
             cv2.rectangle(img, (x_rec, y_rec), (x_rec + w, y_rec + h), (0, 0, 255), 2)  # Red rectangle for incorrect position
     return counter
 
-def main(difficulty):
+def main(cap,difficulty):
+    widthCAP = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    heightCAP = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     # Load an image and create a draggable object for it
     imgS = cv2.imread('img/lenna.png')
     # Get the height, width, and number of channels of the image
@@ -170,12 +170,13 @@ def main(difficulty):
         if check_position(imgSplit, recSplit,img) == H_SIZE * W_SIZE:
             # show the original image of the puzzle
             cv2.imshow("Original Image", imgS)
+            break
                     
         # Display the game window
         cv2.imshow("Image", img)
         # Break the loop if 'q' key is pressed
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
+        cv2.waitKey(1) 
+        
         
     # Remove the images from the img folder
     for imgObject in imgSplit:
@@ -185,5 +186,5 @@ def main(difficulty):
         os.remove(recObject.path)
         
     # Release the video capture and close all windows
-    cap.release()
-    cv2.destroyAllWindows()
+    #cap.release()
+    #cv2.destroyAllWindows()

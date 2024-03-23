@@ -26,10 +26,12 @@ class ButtonManager:
 
     def checkClick(self,cursor):
         for btn in self.btnList:
-            if btn.posOrigin[0] < cursor[0] < btn.posOrigin[0] + btn.size[0]//2 and btn.posOrigin[1] < cursor[1] < btn.posOrigin[1] + btn.size[1]//2:
+            if btn.posOrigin[0] - btn.size[0]//2 < cursor[0] < btn.posOrigin[0] + btn.size[0]//2 and btn.posOrigin[1] - btn.size[1]//2 < cursor[1] < btn.posOrigin[1] + btn.size[1]//2:
                 btn.action()
-                return True
-        return False
+                break
+            
+            
+    
     def clearButtons(self):
         self.btnList = []
 
@@ -86,7 +88,8 @@ class PlayButton(Button):
         
     def action(self):
         global difficulty
-        startGame(difficulty)
+        startGame(cap,0)
+        print("startGame")
         
 class DifficultyButton(Button):
     def __init__(self,title,posOrigin,manager):
@@ -111,8 +114,6 @@ class ExitButton(Button):
         
 
     def action(self):
-        for btn in self.precButtons:
-            print(btn.title)
         btnManager.ovverideButtons(self.precButtons)
 
 class DifficultyModeButton(Button):
@@ -136,7 +137,7 @@ cap.set(3, 1280)
 cap.set(4, 720)
 
 # Initialize the hand detector from the cvzone library
-detector = HandDetector(detectionCon=0.65)
+detector = HandDetector(detectionCon=0.50)
 
 #crea un oggetto ButtonManager
 btnManager = ButtonManager()
@@ -152,7 +153,10 @@ difficulty = 1
 while True:
     success, img = cap.read()
     if not success:
-        break
+        cap = cv2.VideoCapture(0)
+        cap.set(3, 1280)
+        cap.set(4, 720)
+        continue
     #Flip the frame
     img = cv2.flip(img, 1)
     # Find the hands in the frame
@@ -170,18 +174,22 @@ while True:
                 clicked = True
                 # The cursor is the tip of the index finger
                 cursor = lmList[8]
-                #Check if a button is clicked
+                #Check if a button is clicked and execute the action
                 btnManager.checkClick(cursor)
+                print("clicked")
         else:
             clicked = False
                 
-
+    
     cv2.imshow("Image", img)
     
     if cv2.waitKey(1) & 0xFF == ord('s'):
+        print("s")
         break
     
+    
 # Release the video capture and close all windows
+print("end")
 cap.release()
 cv2.destroyAllWindows() 
 
