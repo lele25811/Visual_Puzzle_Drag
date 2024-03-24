@@ -18,7 +18,7 @@ detector = HandDetector(detectionCon=0.65)
 # Class to represent draggable images
 class DragImg():
 
-    toggledImg = None
+    # toggledImg = None
 
     # Function to initialize the draggable image
     def __init__(self, path, posOrigin):
@@ -26,33 +26,42 @@ class DragImg():
         self.posOrigin = posOrigin
         self.img = cv2.imread(self.path)
         self.size = self.img.shape[:2]
-        self.fix = False
+    #    self.fix = False
 
-    def touched(self, cursor):
+#   def touched(self, cursor):
+#       ox, oy = self.posOrigin
+#        h, w = self.size
+        # Check if in the region of the image
+#        if ox < cursor[0] < ox+w and oy < cursor[1] < oy+h:
+#            if not(DragImg.toggledImg) or (DragImg.toggledImg == self):
+#                DragImg.toggledImg = self
+#                return True
+#        return False
+    
+    # Function to update the position of the image
+#    def update(self, cursor):
+#        h, w = self.size
+#        # Check if in the region of the image
+#        if self.touched(cursor) and not self.fix:
+#            self.posOrigin = cursor[0] - w//2, cursor[1] - h//2
+#            return True
+#        return False
+
+    # Function to update the position of the image
+    def update(self, cursor):
         ox, oy = self.posOrigin
         h, w = self.size
         # Check if in the region of the image
         if ox < cursor[0] < ox+w and oy < cursor[1] < oy+h:
-            if not(DragImg.toggledImg) or (DragImg.toggledImg == self):
-                DragImg.toggledImg = self
-                return True
-        return False
-    
-    # Function to update the position of the image
-    def update(self, cursor):
-        h, w = self.size
-        # Check if in the region of the image
-        if self.touched(cursor) and not self.fix:
             self.posOrigin = cursor[0] - w//2, cursor[1] - h//2
             return True
         return False
-    
-    def untoggle(self):
-        if DragImg.toggledImg == self:
-            DragImg.toggledImg = None
+#    def untoggle(self):
+#        if DragImg.toggledImg == self:
+#            DragImg.toggledImg = None
 
-    def fixed(self):
-        self.fix = True
+#    def fixed(self):
+#        self.fix = True
         
 # Function to check if a random position is good and has enough distance from used positions
 def good_pos(used_pos, rand_w, rand_h, min_distance=150):
@@ -87,12 +96,12 @@ def check_position(imgSplit, recSplit,img,counter=0):
         if x_rec + w//2 - 10 < x_img + w//2 < x_rec + w//2 + 10 and y_rec + h//2 - 10 < y_img + h//2 < y_rec + h//2 + 10:
             cv2.rectangle(img, (x_rec, y_rec), (x_rec + w, y_rec + h), (0, 255, 0), 2)  # Green rectangle for correct position
             counter += 1    # Increment the counter if the image is positioned correctly '''
-            imgObject.fixed()
+            #imgObject.fixed()
         else:
             cv2.rectangle(img, (x_rec, y_rec), (x_rec + w, y_rec + h), (0, 0, 255), 2)  # Red rectangle for incorrect position
     return counter
 
-def main(cap,difficulty):
+def main(cap, difficulty):
     widthCAP = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     heightCAP = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     # Load an image and create a draggable object for it
@@ -133,7 +142,9 @@ def main(cap,difficulty):
             used_positions.append((rand_w, rand_h))
             # Add the image to the list of images
             addImage(imgS, imgSplit, x, y, w, h, rand_w, rand_h, ih, iw)
-            
+    
+    original_image_shown = False
+         
     # Main loop for video processing
     while True:
         # Read the frame
@@ -154,7 +165,7 @@ def main(cap,difficulty):
                 cursor = lmList[8]
                 # Update the position of the images
                 for imgObject in imgSplit:
-                    DragImg.untoggle(imgObject)
+                #    DragImg.untoggle(imgObject)
                     if imgObject.update(cursor):
                         break
         try:
@@ -170,13 +181,16 @@ def main(cap,difficulty):
         if check_position(imgSplit, recSplit,img) == H_SIZE * W_SIZE:
             # show the original image of the puzzle
             cv2.imshow("Original Image", imgS)
-            break
-                    
+            original_image_shown = True
+            
         # Display the game window
         cv2.imshow("Image", img)
         # Break the loop if 'q' key is pressed
-        cv2.waitKey(1) 
-        
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+    
+    if original_image_shown:
+        cv2.destroyWindow("Original Image")
         
     # Remove the images from the img folder
     for imgObject in imgSplit:
