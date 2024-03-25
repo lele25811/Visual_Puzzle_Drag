@@ -30,13 +30,11 @@ class ButtonManager:
                 btn.action()
                 break
             
-            
-    
+              
     def clearButtons(self):
         self.btnList = []
 
-    
-        
+           
 #Superclasse bottone
 class Button:
     def __init__(self,title,posOrigin,manager):

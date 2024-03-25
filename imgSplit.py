@@ -5,12 +5,6 @@ import math
 import numpy as np
 import os
 
-# Set up the video capture
-#cap = cv2.VideoCapture(0)
-#cap.set(3, 1280)
-#cap.set(4, 720)
-
-# Get the width and height of the video capture
 
 # Initialize the hand detector from the cvzone library
 detector = HandDetector(detectionCon=0.65)
@@ -139,7 +133,9 @@ def main(cap,difficulty,hints):
             used_positions.append((rand_w, rand_h))
             # Add the image to the list of images
             addImage(imgS, imgSplit, x, y, w, h, rand_w, rand_h, ih, iw)
-            
+    
+    original_image_shown = False
+     
     # Main loop for video processing
     while True:
         # Read the frame
@@ -180,11 +176,11 @@ def main(cap,difficulty,hints):
        
 
         # Check if the images are positioned correctly on the rectangles, based on the number of images
-        if check_position(imgSplit, recSplit,img,hints) == H_SIZE * W_SIZE:
+        if check_position(imgSplit, recSplit, img, hints) == H_SIZE * W_SIZE:
             # show the original image of the puzzle
             cv2.imshow("Original Image", imgS)
-            
-                    
+            original_image_shown = True
+               
         # Display the game window
         cv2.imshow("Image", img)
 
@@ -197,7 +193,8 @@ def main(cap,difficulty,hints):
                 os.remove(recObject.path)
             break
 
-        
+    if original_image_shown:
+        cv2.destroyWindow("Original Image")    
     # Release the video capture and close all windows
     #cap.release()
     #cv2.destroyAllWindows()
