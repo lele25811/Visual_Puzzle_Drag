@@ -81,21 +81,21 @@ def calculate_data(width, height, W_SIZE, H_SIZE):
     return h, w
 
 # Function to check if each image from imgSplit is positioned correctly on recSplit
-def check_position(imgSplit, recSplit,img,counter=0):
+def check_position(imgSplit, recSplit,img,hints,counter=0):
     for imgObject, recObject in zip(imgSplit, recSplit):
         x_img, y_img = imgObject.posOrigin
         x_rec, y_rec = recObject.posOrigin
         h, w = map(int, imgObject.size)
         # Check if the image is positioned correctly on the rectangle
         if x_rec + w//2 - 10 < x_img + w//2 < x_rec + w//2 + 10 and y_rec + h//2 - 10 < y_img + h//2 < y_rec + h//2 + 10:
-            cv2.rectangle(img, (x_rec, y_rec), (x_rec + w, y_rec + h), (0, 255, 0), 2)  # Green rectangle for correct position
+            cv2.rectangle(img, (x_rec, y_rec), (x_rec + w, y_rec + h), (0, 255, 0) if hints else (0,0,255), 2)  # Green rectangle for correct position
             counter += 1    # Increment the counter if the image is positioned correctly '''
-            imgObject.fixed()
+            imgObject.fixed() if hints else None
         else:
             cv2.rectangle(img, (x_rec, y_rec), (x_rec + w, y_rec + h), (0, 0, 255), 2)  # Red rectangle for incorrect position
     return counter
 
-def main(cap,difficulty):
+def main(cap,difficulty,hints):
     DragImg.reset()
     widthCAP = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     heightCAP = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
@@ -169,9 +169,8 @@ def main(cap,difficulty):
                 img[oy2:oy2+h, ox2:ox2+w] = imgObject.img
         except:
             pass
-        
         # Check if the images are positioned correctly on the rectangles, based on the number of images
-        if check_position(imgSplit, recSplit,img) == H_SIZE * W_SIZE:
+        if check_position(imgSplit, recSplit,img,hints) == H_SIZE * W_SIZE:
             # show the original image of the puzzle
             cv2.imshow("Original Image", imgS)
             

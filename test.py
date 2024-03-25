@@ -78,8 +78,11 @@ class SettingsButton(Button):
         btnManager.clearButtons()
         #crea un oggetto DifficultyButton
         difficultyButton = DifficultyButton("Difficulty", (600, 250), btnManager)
+        #crea un oggetto HintButton
+        hintButton = HintButton("Hint: Off", (600, 400), btnManager)
         #crea un oggetto ExitButton
-        exitButton = ExitButton("Exit", (600, 400), btnManager,precButtons)
+        exitButton = ExitButton("Exit", (600, 550), btnManager,precButtons)
+
         
 
 class PlayButton(Button):
@@ -88,8 +91,8 @@ class PlayButton(Button):
         
     def action(self):
         global difficulty
-        startGame(cap,0)
-        print("startGame")
+        startGame(cap,difficulty,hints)
+       
         
 class DifficultyButton(Button):
     def __init__(self,title,posOrigin,manager):
@@ -106,6 +109,7 @@ class DifficultyButton(Button):
         hardButton = DifficultyModeButton("Hard", (850, 250), btnManager,3)
         #crea un oggetto ExitButton
         exitButton = ExitButton("Exit", (600, 400), btnManager,precButtons)
+        
 
 class ExitButton(Button):
     def __init__(self,title,posOrigin,manager,precButtons):
@@ -131,6 +135,24 @@ class DifficultyModeButton(Button):
         else:
             return super().draw()
         
+class HintButton(Button):
+    def __init__(self,title,posOrigin,manager):
+        super().__init__(title,posOrigin,manager)
+        self.toggle = False
+        
+    def action(self):
+        self.toggle = not self.toggle
+        global hints
+        if self.toggle:
+            
+            hints = True
+            self.title = "Hint: On"
+        else:
+            
+            hints = False
+            self.title = "Hint: Off"
+        
+        
 # Set up the video capture
 cap = cv2.VideoCapture(0)
 cap.set(3, 1280)
@@ -145,6 +167,8 @@ btnManager = ButtonManager()
 playButton = PlayButton("Play", (600, 250), btnManager)
 #crea un oggetto SettingsButton
 settingsButton = SettingsButton("Settings", (600, 400), btnManager)
+
+hints = False
 
 clicked = False
 
