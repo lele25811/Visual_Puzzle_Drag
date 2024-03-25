@@ -88,7 +88,7 @@ class PlayButton(Button):
         
     def action(self):
         global difficulty
-        startGame(cap, 0)
+        startGame(cap,0)
         print("startGame")
         
 class DifficultyButton(Button):
@@ -187,7 +187,7 @@ while True:
         print("s")
         break
     
-        
+    
 # Release the video capture and close all windows
 print("end")
 cap.release()
