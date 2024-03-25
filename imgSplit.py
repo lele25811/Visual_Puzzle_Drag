@@ -163,14 +163,22 @@ def main(cap,difficulty,hints):
                     imgObject.untoggle()
                     if imgObject.update(cursor):
                         break
-        try:
-            # Draw randomly positioned images on the screen
-            for imgObject in imgSplit:
-                h, w = map(int, imgObject.size)
-                ox2, oy2 = imgObject.posOrigin
-                img[oy2:oy2+h, ox2:ox2+w] = imgObject.img
-        except:
-            pass
+        # Draw randomly positioned images on the screen
+        for imgObject in imgSplit:
+            h, w = map(int, imgObject.size)
+            ox2, oy2 = imgObject.posOrigin
+            hmax,wmax = img.shape[:2]
+            if oy2 < 0:
+                oy2 = 0
+            if ox2 < 0:
+                ox2 = 0
+            if oy2+h > hmax:
+                oy2 = hmax-h
+            if ox2+w > wmax:
+                ox2 = wmax-w
+            img[oy2:oy2+h, ox2:ox2+w] = imgObject.img
+       
+
         # Check if the images are positioned correctly on the rectangles, based on the number of images
         if check_position(imgSplit, recSplit,img,hints) == H_SIZE * W_SIZE:
             # show the original image of the puzzle
