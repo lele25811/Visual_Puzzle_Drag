@@ -99,10 +99,12 @@ def main(cap,difficulty,hints):
     DragImg.reset()
     widthCAP = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     heightCAP = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-    # Load an image and create a draggable object for it
-    imgS = cv2.imread('img/lenna.png')
+    #Load a random image from the img folder
+    imgS = cv2.imread("img/" + random.choice(os.listdir("img/")))
+    #make it 512x512
+    imgS = cv2.resize(imgS, (512, 512))
     # Get the height, width, and number of channels of the image
-    height, width, channels = imgS.shape
+    height, width = 512, 512
     # Specify the number of vertical and horizontal splits for the image
     W_SIZE, H_SIZE = difficulty+1,difficulty+1
     # List to store the images
@@ -179,14 +181,12 @@ def main(cap,difficulty,hints):
         cv2.imshow("Image", img)
 
         # Break the loop if 'q' key is pressed
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            if cv2.waitKey(1) & 0xFF == ord('q'):
+        if cv2.waitKey(1) & 0xFF == ord('q'):    
             # Remove the images from the img folder
-                for imgObject in imgSplit:
-                    os.remove(imgObject.path)    
-                                
-                for recObject in recSplit:
-                    os.remove(recObject.path)
+            for imgObject in imgSplit:
+                os.remove(imgObject.path)             
+            for recObject in recSplit:
+                os.remove(recObject.path)
             break
 
         
