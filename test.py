@@ -88,7 +88,7 @@ class PlayButton(Button):
         
     def action(self):
         global difficulty
-        startGame(cap, difficulty)
+        startGame(cap, 0)
         print("startGame")
         
 class DifficultyButton(Button):
