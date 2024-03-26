@@ -95,12 +95,21 @@ def check_position(imgSplit, recSplit,img,hints,counter=0):
             cv2.rectangle(img, (x_rec, y_rec), (x_rec + w, y_rec + h), (0, 0, 255), 2)  # Red rectangle for incorrect position
     return counter
 
-def main(cap,difficulty,hints):
+def main(cap,difficulty,hints, imgChoose):
     DragImg.reset()
     widthCAP = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     heightCAP = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+
     #Load a random image from the img folder
-    imgS = cv2.imread("img/" + random.choice(os.listdir("img/")))
+    lenna = cv2.imread('img/Lenna.png')
+    dog = cv2.imread('img/cane.jpg')
+    cat = cv2.imread('img/gatto.jpg')
+    if imgChoose == 1:
+        imgS = cv2.imread('img/Lenna.png')
+    if imgChoose == 2:
+        imgS = cv2.imread('img/cane.jpg')
+    if imgChoose == 3:
+        imgS = cv2.imread('img/gatto.jpg')
     #make it 512x512
     imgS = cv2.resize(imgS, (512, 512))
     # Get the height, width, and number of channels of the image

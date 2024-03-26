@@ -1,3 +1,4 @@
+# script per testare varie ed eventuali (vuoto al momento)
 import cv2
 from cvzone.HandTrackingModule import HandDetector
 import copy
@@ -279,3 +280,5 @@ while True:
 print("end")
 cap.release()
 cv2.destroyAllWindows() 
+
+
