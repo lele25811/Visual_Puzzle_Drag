@@ -52,10 +52,10 @@ class DragImg():
         self.fix = True
         
 # Function to check if a random position is good and has enough distance from used positions
-def good_pos(used_pos, rand_w, rand_h, min_distance=150):
+def good_pos(used_pos, rand_w, rand_h, h, w):
     for pos in used_pos:
         distance = math.sqrt((pos[0] - rand_w)**2 + (pos[1] - rand_h)**2)
-        if distance < min_distance:
+        if distance < max(h, w) + 20:
             return False
     return True
 
@@ -75,13 +75,13 @@ def calculate_data(width, height, W_SIZE, H_SIZE):
     return h, w
 
 # Function to check if each image from imgSplit is positioned correctly on recSplit
-def check_position(imgSplit, recSplit,img,hints,counter=0):
+def check_position(imgSplit, recSplit, img, hints, counter=0):
     for imgObject, recObject in zip(imgSplit, recSplit):
         x_img, y_img = imgObject.posOrigin
         x_rec, y_rec = recObject.posOrigin
         h, w = map(int, imgObject.size)
         # Check if the image is positioned correctly on the rectangle
-        if x_rec + w//2 - 10 < x_img + w//2 < x_rec + w//2 + 10 and y_rec + h//2 - 10 < y_img + h//2 < y_rec + h//2 + 10:
+        if x_rec + w//2 - 5 < x_img + w//2 < x_rec + w//2 + 5 and y_rec + h//2 - 5 < y_img + h//2 < y_rec + h//2 + 5:
             cv2.rectangle(img, (x_rec, y_rec), (x_rec + w, y_rec + h), (0, 255, 0) if hints else (0,0,255), 2)  # Green rectangle for correct position
             counter += 1    # Increment the counter if the image is positioned correctly '''
             imgObject.fixed() if hints else None
@@ -132,11 +132,11 @@ def main(cap,difficulty,hints, imgChoose):
             pos_x = int(widthCAP//2 - width//2 + (w * iw))
             pos_y = int(heightCAP//2 - height//2 + (h * ih) )
             # Add the image to the list of images
-            addImage(rectangle , recSplit, x, y, w, h, pos_x, pos_y, ih, iw+3)
+            addImage(rectangle , recSplit, x, y, w, h, pos_x, pos_y, ih, iw + W_SIZE)
             # Ensure unique and unused position
             rand_w, rand_h = random.randint(0, widthCAP - (int(w)+1)), random.randint(0, heightCAP - (int(h)+1))
             # when the position is not good, keep generating new positions
-            while not good_pos(used_positions, rand_w, rand_h):
+            while not good_pos(used_positions, rand_w, rand_h, h, w):
                 rand_w, rand_h = random.randint(0, widthCAP - (int(w)+1)), random.randint(0, heightCAP - (int(h)+1))
             # Add the position to the list of used positions
             used_positions.append((rand_w, rand_h))
