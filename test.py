@@ -2,6 +2,7 @@ import cv2
 from cvzone.HandTrackingModule import HandDetector
 import copy
 from imgSplit import main as startGame
+import os
 
 class ButtonManager:
     def __init__(self):
@@ -76,6 +77,7 @@ class SettingsButton(Button):
         precButtons = copy.deepcopy(btnManager.btnList)
         btnManager.clearButtons()
         #crea un oggetto ImgButton
+        #imgButton = ImgButton("Image", (400, 250), btnManager)
         imgButton = ImgButton("Image", (400, 250), btnManager)
         #crea un oggetto DifficultyButton
         difficultyButton = DifficultyButton("Difficulty", (800, 250), btnManager)
@@ -95,7 +97,7 @@ class PlayButton(Button):
         global imgChoose
         startGame(cap,difficulty,hints, imgChoose)
        
-class ImgPrint(Button):
+""" class ImgPrint(Button):
     def __init__(self, title, posOrigin, manager):
         super().__init__(title, posOrigin, manager)
 
@@ -134,6 +136,80 @@ class ImgButton(Button):
         #crea un oggetto ExitButton
         exitButton = ExitButton("Exit", (600, 600), btnManager,precButtons)
 
+ """
+
+class ImgButton(Button):
+    def __init__(self,title,posOrigin,manager):
+        super().__init__(title,posOrigin,manager)
+        
+    def action(self):
+        precButtons = copy.deepcopy(btnManager.btnList)
+        btnManager.clearButtons()
+        #crea slider
+        slider = Slider("Slider", (600, 250), btnManager)
+        #crea tasto incremento slidr
+        sliderIncrement = SliderIncrement(">", (1000, 250), btnManager,slider)
+        #crea tasto decremento slider
+        sliderDecrement = SliderDecrement("<", (200, 250), btnManager,slider)
+        #crea tasto conferma(exit mascherato)
+        confirmButton = ExitButton("Confirm", (600, 600), btnManager,precButtons)
+
+class Slider(Button):
+    def __init__(self, title, posOrigin, manager):
+        super().__init__(title, posOrigin, manager)
+        self.counter = 0
+        self.immagini = []
+        for filename in os.listdir("img"):
+            print(filename)
+            if filename.endswith((".png",".jpg",".jpeg")):
+                path = os.path.join("img",filename)
+                pic = cv2.imread(path)
+                self.immagini.append(pic)
+
+    
+
+    def draw(self):
+        self.changeImg()
+        imm  = self.immagini[self.counter]
+        immResized = cv2.resize(imm, (300,300))
+        img[150:150+immResized.shape[0], 450:450+immResized.shape[1]] = immResized  # Sovrappone l'immagine di Lenna sul pulsante
+
+    def changeImg(self):
+        global imgChoose
+        imgChoose = self.immagini[self.counter]
+
+    
+        
+class SliderIncrement(Button):
+    def __init__(self,title,posOrigin,manager,slider):
+        super().__init__(title,posOrigin,manager)
+        self.slider = slider
+        
+    def action(self):
+        if self.slider.counter + 1 >= len(self.slider.immagini):
+            self.slider.counter = 0
+        else:
+            self.slider.counter += 1
+        #self.slider.changeImg()
+
+    def draw(self):
+        super().draw()
+
+class SliderDecrement(Button):
+    def __init__(self,title,posOrigin,manager,slider):
+        super().__init__(title,posOrigin,manager)
+        self.slider = slider
+        
+    def action(self):
+        if self.slider.counter - 1 < 0:
+            self.slider.counter = len(self.slider.immagini) - 1
+        else:
+            self.slider.counter -= 1
+        #self.slider.changeImg()
+
+    def draw(self):
+        super().draw()
+    
 
 
 class DifficultyButton(Button):
@@ -177,7 +253,7 @@ class DifficultyModeButton(Button):
         else:
             return super().draw()
 
-class ImgModeButton(Button):
+""" class ImgModeButton(Button):
     def __init__(self,title,posOrigin,manager,numb):
         super().__init__(title,posOrigin,manager)
         self.numb = numb
@@ -190,7 +266,7 @@ class ImgModeButton(Button):
         if imgChoose == self.numb:
             return super().draw((0, 255, 0))
         else:
-            return super().draw()
+            return super().draw() """
 
     
     
@@ -199,13 +275,13 @@ class ImgModeButton(Button):
 class HintButton(Button):
     def __init__(self,title,posOrigin,manager):
         super().__init__(title,posOrigin,manager)
-        self.toggle = False
+        self.toggle = True if hints else False
+        self.title = "Hint: On" if hints else "Hint: Off"
         
     def action(self):
         self.toggle = not self.toggle
         global hints
         if self.toggle:
-            
             hints = True
             self.title = "Hint: On"
         else:
@@ -235,7 +311,7 @@ clicked = False
 
 difficulty = 1
 
-imgChoose = 1
+imgChoose = None
 
 while True:
     success, img = cap.read()
