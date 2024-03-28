@@ -4,7 +4,7 @@ import random
 import math
 import numpy as np
 import os
-
+from time import perf_counter
 
 # Initialize the hand detector from the cvzone library
 detector = HandDetector(detectionCon=0.65)
@@ -50,6 +50,20 @@ class DragImg():
 
     def fixed(self):
         self.fix = True
+
+# Class to write
+class VideoWriter:
+    def __init__(self, font=cv2.FONT_HERSHEY_SIMPLEX, font_scale=1, font_color=(255, 255, 255),
+                 line_type=2, position=(350, 700)):
+        self.font = font
+        self.font_scale = font_scale
+        self.font_color = font_color
+        self.line_type = line_type
+        self.position = position
+
+    def write_text(self, frame, text):
+        cv2.putText(frame, text, self.position, self.font, self.font_scale, self.font_color, self.line_type)
+        return frame
         
 # Function to check if a random position is good and has enough distance from used positions
 def good_pos(used_pos, rand_w, rand_h, h, w):
@@ -90,6 +104,9 @@ def check_position(imgSplit, recSplit, img, hints, counter=0):
     return counter
 
 def main(cap,difficulty,hints, imgChoose=None):
+    # timer parameters
+    start_time = perf_counter()
+    end_time = 0
     DragImg.reset()
     widthCAP = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     heightCAP = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
@@ -181,10 +198,18 @@ def main(cap,difficulty,hints, imgChoose=None):
 
         # Check if the images are positioned correctly on the rectangles, based on the number of images
         if check_position(imgSplit, recSplit, img, hints) == H_SIZE * W_SIZE:
+            # final time
+            if end_time == 0:
+                end_time = perf_counter()
+                time = end_time - start_time
+                time = round(time, 2)
+            video_writer = VideoWriter() 
+            img = video_writer.write_text(img, f"Congratulations, time: {time} Seconds")
             # show the original image of the puzzle
             cv2.imshow("Original Image", imgS)
             original_image_shown = True
                
+        
         # Display the game window
         cv2.imshow("Image", img)
 

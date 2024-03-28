@@ -96,47 +96,7 @@ class PlayButton(Button):
         global difficulty
         global imgChoose
         startGame(cap,difficulty,hints, imgChoose)
-       
-""" class ImgPrint(Button):
-    def __init__(self, title, posOrigin, manager):
-        super().__init__(title, posOrigin, manager)
 
-    def draw(self):
-        super().draw()
-        lenna = cv2.imread('img/Lenna.png')  # Carica l'immagine di Lenna
-        lennaResized = cv2.resize(lenna, (300,300))
-        img[50:50+lennaResized.shape[0], 100:100+lennaResized.shape[1]] = lennaResized  # Sovrappone l'immagine di Lenna sul pulsante
-
-        dog = cv2.imread('img/cane.jpg')  # Carica l'immagine di Lenna
-        dogResized = cv2.resize(dog, (300,300))
-        img[50:50+dogResized.shape[0], 450:450+dogResized.shape[1]] = dogResized  # Sovrappone l'immagine di Lenna sul pulsante
-
-        cat = cv2.imread('img/gatto.jpg')  # Carica l'immagine di Lenna
-        catResized = cv2.resize(cat, (300,300))
-        img[50:50+catResized.shape[0], 800:800+catResized.shape[1]] = catResized  # Sovrappone l'immagine di Lenna sul pulsante
-
-
-
-class ImgButton(Button):
-    def __init__(self, title, posOrigin, manager):
-        super().__init__(title, posOrigin, manager)
-
-    def action(self):
-        precButtons = copy.deepcopy(btnManager.btnList)
-        btnManager.clearButtons()
-        # img1 = Lenna
-        lennaImg = ImgPrint("", (300,300), btnManager)
-        lennaSelector = ImgModeButton("Lenna", (250, 450), btnManager,1)
-        # img2 = Cane
-        dogImg = ImgPrint("Dog", (550,300), btnManager)
-        caneSelector = ImgModeButton("Cane", (600, 450), btnManager,2)
-        # img3 = Gatto
-        catImg = ImgPrint("Cat", (900,300), btnManager)
-        gattoSelector = ImgModeButton("Gatto", (950, 450), btnManager,3)
-        #crea un oggetto ExitButton
-        exitButton = ExitButton("Exit", (600, 600), btnManager,precButtons)
-
- """
 
 class ImgButton(Button):
     def __init__(self,title,posOrigin,manager):
@@ -252,25 +212,7 @@ class DifficultyModeButton(Button):
             return super().draw((0, 255, 0))
         else:
             return super().draw()
-
-""" class ImgModeButton(Button):
-    def __init__(self,title,posOrigin,manager,numb):
-        super().__init__(title,posOrigin,manager)
-        self.numb = numb
-
-    def action(self):
-        global imgChoose
-        imgChoose = self.numb
-
-    def draw(self):
-        if imgChoose == self.numb:
-            return super().draw((0, 255, 0))
-        else:
-            return super().draw() """
-
     
-    
-
         
 class HintButton(Button):
     def __init__(self,title,posOrigin,manager):
