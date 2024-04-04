@@ -224,6 +224,4 @@ def main(cap,difficulty,hints, imgChoose=None):
 
     if original_image_shown:
         cv2.destroyWindow("Original Image")    
-    # Release the video capture and close all windows
-    #cap.release()
-    #cv2.destroyAllWindows()
+  
