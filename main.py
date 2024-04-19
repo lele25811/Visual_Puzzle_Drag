@@ -120,7 +120,6 @@ class Slider(Button):
         self.counter = 0
         self.immagini = []
         for filename in os.listdir("img"):
-            print(filename)
             if filename.endswith((".png",".jpg",".jpeg")):
                 path = os.path.join("img",filename)
                 pic = cv2.imread(path)
@@ -150,7 +149,7 @@ class SliderIncrement(Button):
             self.slider.counter = 0
         else:
             self.slider.counter += 1
-        #self.slider.changeImg()
+        
 
     def draw(self):
         super().draw()
@@ -165,7 +164,7 @@ class SliderDecrement(Button):
             self.slider.counter = len(self.slider.immagini) - 1
         else:
             self.slider.counter -= 1
-        #self.slider.changeImg()
+        
 
     def draw(self):
         super().draw()
@@ -281,7 +280,6 @@ while True:
                 cursor = lmList[8]
                 #Check if a button is clicked and execute the action
                 btnManager.checkClick(cursor)
-                print("clicked")
         else:
             clicked = False
                 
@@ -289,11 +287,9 @@ while True:
     cv2.imshow("Image", img)
     
     if cv2.waitKey(1) & 0xFF == ord('s'):
-        print("s")
         break
     
     
 # Release the video capture and close all windows
-print("end")
 cap.release()
 cv2.destroyAllWindows() 
