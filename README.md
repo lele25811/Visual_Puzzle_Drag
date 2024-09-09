@@ -40,3 +40,6 @@ python main.py
 2. Place your hands in front of the webcam to begin hand detection.
 ![image](https://github.com/user-attachments/assets/c7f6d7aa-cd41-4da4-9b17-528707af80d3)
 3. Use your hands as a mouse to drag and place the puzzle pieces until you complete the original image.
+
+## Watch the Demo Video
+[![Watch the video](https://img.youtube.com/vi/5RpC2SvJFKo/0.jpg)](https://youtu.be/5RpC2SvJFKo)
